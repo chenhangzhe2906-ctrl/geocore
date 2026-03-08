@@ -185,6 +185,7 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="MMesh.h" />
+    <ClInclude Include="MObject.h" />
     <ClInclude Include="MPoint.h" />
     <ClInclude Include="OpenSTL.h" />
     <ClInclude Include="OpenSTLDlg.h" />
@@ -196,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MMesh.cpp" />
+    <ClCompile Include="MObject.cpp" />
     <ClCompile Include="MPoint.cpp" />
     <ClCompile Include="OpenSTL.cpp" />
     <ClCompile Include="OpenSTLDlg.cpp" />
