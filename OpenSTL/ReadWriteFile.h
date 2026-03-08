@@ -1,7 +1,6 @@
 #pragma once
 #include"pch.h"
 
-
 class ReadWriteFile
 {
 public:
@@ -12,7 +11,7 @@ public:
 public:
 	void* ReadSTL(const CString& pathName);
 	unsigned long GetFileLength(ifstream& is);
-	bool ReadBinary(ifstream& is, vector<MPoint>& points) const;
-	bool ReadASCII(const CString& pathName, vector<MPoint>& points) const;
+	bool ReadBinary(ifstream& is, vector<MPoint>& points);
+	bool ReadASCII(const CString& pathName, vector<MPoint>& points);
 };
 

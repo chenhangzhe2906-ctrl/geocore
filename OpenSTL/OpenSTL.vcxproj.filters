@@ -39,6 +39,12 @@
     <ClInclude Include="MPoint.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MMesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCompare.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenSTL.cpp">
@@ -54,6 +60,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MMesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCompare.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -34,6 +34,16 @@ void* ReadWriteFile::ReadSTL(const CString& pathName)
 		bool binary = true;
 	}
 	vector <MPoint> points;
+	bool status = false;
+	if (binary == true) {
+		status = ReadBinary(is, points);
+		is.close();
+	}
+	else {
+		is.close();
+		status = ReadASCII(pathName, points);
+	}
+
 }
 
 unsigned long ReadWriteFile::GetFileLength(ifstream& is)
@@ -45,7 +55,7 @@ unsigned long ReadWriteFile::GetFileLength(ifstream& is)
 	return endPos;
 }
 
-bool ReadWriteFile::ReadBinary(ifstream& is, vector<MPoint>& points) const
+bool ReadWriteFile::ReadBinary(ifstream& is, vector<MPoint>& points)
 {
 	unsigned int nFacet = 0;
 	is.seekg(80, ios::beg);
@@ -66,7 +76,7 @@ bool ReadWriteFile::ReadBinary(ifstream& is, vector<MPoint>& points) const
 	return true;
 }
 
-bool ReadWriteFile::ReadASCII(const CString& pathName, vector<MPoint>& points) const
+bool ReadWriteFile::ReadASCII(const CString& pathName, vector<MPoint>& points)
 {
 	CStdioFile MyFile;
 	MPoint p;
@@ -94,10 +104,10 @@ bool ReadWriteFile::ReadASCII(const CString& pathName, vector<MPoint>& points) c
 	}
 	if (points.size() == 0)
 	{
-		inFile.Close();
+		MyFile.Close();
 		return false;
 	}
-	inFile.Close();
+	MyFile.Close();
 	return true;
 }
 
