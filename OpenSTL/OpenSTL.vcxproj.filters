@@ -48,6 +48,24 @@
     <ClInclude Include="MObject.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MEntity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MLine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MMatrix.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MGeometry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MBBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenSTL.cpp">
@@ -72,6 +90,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MObject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MEntity.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MLine.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MMatrix.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MVector.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MGeometry.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MBBox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

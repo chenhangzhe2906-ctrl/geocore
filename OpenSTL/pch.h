@@ -18,4 +18,7 @@
 #include "MObject.h"
 using namespace std;
 
+#define ERR8 1e-8
+#define ERR7 1e-7
+
 #endif //PCH_H

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -184,9 +184,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MBBox.h" />
+    <ClInclude Include="MEntity.h" />
+    <ClInclude Include="MGeometry.h" />
+    <ClInclude Include="MLine.h" />
+    <ClInclude Include="MMatrix.h" />
     <ClInclude Include="MMesh.h" />
     <ClInclude Include="MObject.h" />
     <ClInclude Include="MPoint.h" />
+    <ClInclude Include="MVector.h" />
     <ClInclude Include="OpenSTL.h" />
     <ClInclude Include="OpenSTLDlg.h" />
     <ClInclude Include="pch.h" />
@@ -196,9 +202,15 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MBBox.cpp" />
+    <ClCompile Include="MEntity.cpp" />
+    <ClCompile Include="MGeometry.cpp" />
+    <ClCompile Include="MLine.cpp" />
+    <ClCompile Include="MMatrix.cpp" />
     <ClCompile Include="MMesh.cpp" />
     <ClCompile Include="MObject.cpp" />
     <ClCompile Include="MPoint.cpp" />
+    <ClCompile Include="MVector.cpp" />
     <ClCompile Include="OpenSTL.cpp" />
     <ClCompile Include="OpenSTLDlg.cpp" />
     <ClCompile Include="pch.cpp">
