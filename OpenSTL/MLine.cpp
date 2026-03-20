@@ -370,8 +370,33 @@ double MLineSeg::DistanceToPoint(const MPoint& point) const
 {
 	MVector dir = this->Direction();
 	dir.Normalize();
+	MVector vec(point - m_startPnt);
+	MVector temp(dir * vec);
+	return temp.Magnitude();
+}
 
-	return 0.0;
+MPoint MLineSeg::ProjectPoint(const MPoint& point, double* t) const
+{
+	MVector AP = point - m_startPnt;
+	MVector AB = m_endPnt - m_startPnt;
+	double len2_ab = AB.Length2();
+	double ratio = (AP % AB) / len2_ab;
+	if (t)
+	{
+		*t = ratio;
+	}
+	if (ratio <= 0.0)
+	{
+		return m_startPnt;
+	}
+	else if (ratio >= 1.0)
+	{
+		return m_endPnt;
+	}
+	else
+	{
+		return m_startPnt + AB * ratio;
+	}
 }
 
 

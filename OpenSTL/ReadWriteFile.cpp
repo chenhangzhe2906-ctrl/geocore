@@ -31,7 +31,7 @@ void* ReadWriteFile::ReadSTL(const CString& pathName)
 	bool binary = false;
 	fileLength = GetFileLength(is);
 	if (fileLength == 84 + nFacet * 50) {
-		bool binary = true;
+		binary = true;
 	}
 	vector <MPoint> points;
 	bool status = false;
