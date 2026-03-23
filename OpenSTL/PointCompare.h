@@ -1,4 +1,5 @@
 #include "pch.h"
+#include"MPoint.h"
 
 class PointCompare
 {

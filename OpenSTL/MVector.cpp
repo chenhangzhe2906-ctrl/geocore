@@ -32,6 +32,16 @@ MVector& MVector::operator=(const MVector& vec)
 	return *this;
 }
 
+double MVector::AngleWith(MVector& other)
+{
+	MVector vec1(*this);
+	vec1.Normalize();
+	MVector vec2(other);
+	vec2.Normalize();
+	double dot = vec1 % vec2;
+	return acos(dot);
+}
+
 double MVector::operator[](int idx) const 
 {
 	return m_coord[idx];

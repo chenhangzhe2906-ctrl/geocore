@@ -1,5 +1,8 @@
 #pragma once
 #include "pch.h"
+#include"MPoint.h"
+#include"MLine.h"
+#include "MObject.h"
 
 struct Triangle {
 	int coord[3];

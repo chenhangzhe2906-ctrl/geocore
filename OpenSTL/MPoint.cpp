@@ -36,7 +36,12 @@ MPoint & MPoint::operator=(const MPoint& point)
 	return *this;
 }
 
-double MPoint::operator[](int idx) const
+double MPoint::operator[](int idx) const 
+{
+	return this->coord[idx];
+}
+
+double& MPoint::operator[](int idx)
 {
 	return this->coord[idx];
 }

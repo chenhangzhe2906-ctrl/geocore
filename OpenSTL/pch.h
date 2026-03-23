@@ -12,10 +12,9 @@
 #include <iostream>
 #include<vector>
 #include<map>
-#include "ReadWriteFile.h"
 #include<fstream>
-#include "MPoint.h"
-#include "MObject.h"
+#include <ostream>
+#include <numeric>
 using namespace std;
 
 #define ERR8 1e-8

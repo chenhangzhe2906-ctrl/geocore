@@ -9,7 +9,8 @@ public:
 	MPoint(double x, double y, double z);
 	void Set(double x, double y, double z);
 	MPoint& operator=(const MPoint& point);
-	double operator[](int idx) const ;
+	double operator[](int idx) const;
+	double& operator[](int idx);
 	MPoint& operator +=(const MPoint& other) ;
 	MPoint& operator -=(const MPoint& other);
 	MVector& operator-(const MPoint& other) const;

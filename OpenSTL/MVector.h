@@ -11,6 +11,7 @@ public:
 
 public:
 	MVector& operator =(const MVector& vec); 
+	double AngleWith(const MVector& other) const;
 	double operator [](int idx) const;
 	//double& operator [](int idx);
 	void Set(double x, double y, double z);
