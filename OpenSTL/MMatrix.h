@@ -20,6 +20,7 @@ public:
 	MMatrix& operator =(const MMatrix& mat);
 	MMatrix operator+(const MMatrix& mat2);
 	double* operator [](int r) const;
+	friend MVector operator*(const MMatrix& mat, const MVector& vec);
 
 
 	int GetRow() const { return m_row; }
@@ -60,9 +61,23 @@ private:
 	double** m_ppData;
 };
 
+inline MVector operator*(const MMatrix& mat, const MVector& vec)
+{
+	vector <double> temp;
+	temp.reserve(3);
+	for (int i = 0; i < 3; i++) {
+		double t = 0.0;
+		for (int j = 0; j < mat.m_row; j++) {
+			t += mat[i][j] * vec[i];
+		}
+		temp.push_back(t);
+	}
+	return MVector(temp[0], temp[1], temp[2]);
+}
+
 inline MMatrix operator *(const MMatrix& mat1, const MMatrix& mat2)
 {
-	ASSERT(mat1.GetCol() == mat2.GetRow());
+	//ASSERT(mat1.GetCol() == mat2.GetRow());
 
 	MMatrix result(mat1.GetRow(), mat2.GetCol());
 

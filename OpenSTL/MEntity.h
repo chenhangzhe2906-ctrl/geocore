@@ -24,7 +24,7 @@ public:
 	int GetID() const;
 	void SetID(int nID);
 	bool HitTest(const MLine& cursorRay) const;
-	bool HitTest(const MLine& cursorRay, const MEntity& matrix) const;
+	bool HitTest(const MLine& cursorRay, const MMatrix& matrix) const;
 
 public:
 	virtual void CalculateBBox() {}
