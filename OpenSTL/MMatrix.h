@@ -21,6 +21,7 @@ public:
 	MMatrix operator+(const MMatrix& mat2);
 	double* operator [](int r) const;
 	friend MVector operator*(const MMatrix& mat, const MVector& vec);
+	friend MPoint operator*(const MMatrix& mat, const MPoint& point);
 
 
 	int GetRow() const { return m_row; }
@@ -54,6 +55,7 @@ public:
 	MMatrix operator *(double dScalar) const;
 	friend bool operator != (const MMatrix& mat1, const MMatrix& mat2);
 
+
 private:
 	int m_row;
 	int m_col;
@@ -73,6 +75,20 @@ inline MVector operator*(const MMatrix& mat, const MVector& vec)
 		temp.push_back(t);
 	}
 	return MVector(temp[0], temp[1], temp[2]);
+}
+
+inline MPoint operator*(const MMatrix& mat, const MPoint& point)
+{
+	vector <double> temp;
+	temp.reserve(3);
+	for (int i = 0; i < 3; i++) {
+		double t = 0.0;
+		for (int j = 0; j < mat.m_row; j++) {
+			t += mat[i][j] * point[i];
+		}
+		temp.push_back(t);
+	}
+	return MPoint(temp[0], temp[1], temp[2]);
 }
 
 inline MMatrix operator *(const MMatrix& mat1, const MMatrix& mat2)

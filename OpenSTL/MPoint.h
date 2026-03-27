@@ -20,6 +20,33 @@ public:
 	double DistanceToPoint(const MPoint& other) const ;
 	friend bool operator==(const MPoint& a, const MPoint& b);
 
+public:
+	bool Read(ifstream& is, bool binary /* = true */)
+	{
+		if (binary)
+		{
+			is.read((char*)coord, 3 * sizeof(double));
+		}
+		else
+		{
+			is >> coord[0] >> coord[1] >> coord[2];
+			is.ignore();
+		}
+		return true;
+	}
+	void Write(ostream& os, bool binary /* = true */) const
+	{
+		if (binary)
+		{
+			os.write((const char*)coord, 3 * sizeof(double));
+		}
+		else
+		{
+			os << coord[0] << " " << coord[1] << " " << coord[2] << endl;
+		}
+	}
+
+
 private:
 	double coord[3];
 };

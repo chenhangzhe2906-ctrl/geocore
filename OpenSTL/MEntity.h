@@ -19,8 +19,8 @@ public:
 	MEntity& operator =(const MEntity& entity);
 
 public:
-	const MEntity& GetBBox() const { return m_bbox; }
-	void SetBBox(const MEntity& bbox) { m_bbox = bbox; }
+	const MBBox& GetBBox() const { return m_bbox; }
+	void SetBBox(const MBBox& bbox) { m_bbox = bbox; }
 	int GetID() const;
 	void SetID(int nID);
 	bool HitTest(const MLine& cursorRay) const;
