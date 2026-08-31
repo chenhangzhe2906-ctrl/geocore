@@ -10,8 +10,9 @@ public:
 	~MVector(void);
 
 public:
-	MVector& operator =(const MVector& vec); 
-	double AngleWith(const MVector& other) const;
+	MVector& operator =(const MVector& vec);
+	double AngleWith(MVector& other);
+
 	double operator [](int idx) const;
 	//double& operator [](int idx);
 	void Set(double x, double y, double z);
@@ -42,12 +43,12 @@ public:
 	void SetZero() { Set(0.0, 0.0, 0.0); };
 	void Flip() { Set(-m_coord[0], -m_coord[1], -m_coord[2]); };
 
-	/*
+	
 	double AngleWith(const MVector& vec) const;
 	double AngleWith(const MVector& vec, const MVector& nor) const;
 	void GetValue(double* d) const;
 	bool IsParallelTo(const MVector& vec) const;
-	*/
+	
 
 private:
 	double m_coord[3];
@@ -78,18 +79,7 @@ public:
 		return MVector(vec1[0] - vec2[0], vec1[1] - vec2[1], vec1[2] - vec2[2]);
 	}
 
-	// 注意：这里使用了 TcMatrix，可能需要保留或者修改
-	// 如果不需要这个函数，可以注释掉
-	/*
-	friend MVector operator *(const TcMatrix& mat, const MVector& vec)
-	{
-		//ASSERT(mat.GetRow() == 4 && mat.GetCol() == 4);
-
-		return MVector(mat[0][0] * vec[0] + mat[0][1] * vec[1] + mat[0][2] * vec[2],
-			mat[1][0] * vec[0] + mat[1][1] * vec[1] + mat[1][2] * vec[2],
-			mat[2][0] * vec[0] + mat[2][1] * vec[1] + mat[2][2] * vec[2]);
-	}
-	*/
+	
 };
 
 

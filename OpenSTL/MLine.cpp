@@ -52,36 +52,77 @@ MLine::MLine(void)
 
 MLine::MLine(const MPoint& point, const MVector& dir)
 {
-	m_dir = dir;
-	m_dir.Normalize();
 	m_point = point;
-	return;
+	Set(point, dir);
 }
 
 MLine::MLine(const MPoint& p1, const MPoint& p2)
 {
 	m_point = p1;
 	m_dir = p2 - p1;
-	m_dir.Normalize();
-	return;
+	if (m_dir.Magnitude() > ERR7)
+	{
+		m_dir.Normalize();
+	}
+	else
+	{
+		m_dir.SetZero();
+	}
 }
 
 MLine::MLine(const MVector& v1, const MVector& v2)
 {
 	m_point.Set(v1[0], v1[1], v1[2]);
 	m_dir = v2 - v1;
-	m_dir.Normalize();
+	if (m_dir.Magnitude() > ERR7)
+	{
+		m_dir.Normalize();
+	}
+	else
+	{
+		m_dir.SetZero();
+	}
 }
 
 MLine::~MLine(void)
 {
 }
 
+void MLine::Write(ostream& os, bool binary) const
+{
+	(void)binary;
+	m_point.Write(os, false);
+	double value[3];
+	m_dir.GetValue(value);
+	os << value[0] << " " << value[1] << " " << value[2] << endl;
+}
+
+bool MLine::Read(istream& is, bool binary)
+{
+	(void)binary;
+	double point[3] = { 0.0, 0.0, 0.0 };
+	double dir[3] = { 0.0, 0.0, 0.0 };
+	if (!(is >> point[0] >> point[1] >> point[2] >> dir[0] >> dir[1] >> dir[2]))
+	{
+		return false;
+	}
+	MPoint p(point[0], point[1], point[2]);
+	MVector v(dir[0], dir[1], dir[2]);
+	Set(p, v);
+	return !v.IsZero();
+}
 void MLine::Set(const MPoint& point, const MVector& dir)
 {
-	m_dir = dir;
-	m_dir.Normalize();
 	m_point = point;
+	m_dir = dir;
+	if (m_dir.Magnitude() > ERR7)
+	{
+		m_dir.Normalize();
+	}
+	else
+	{
+		m_dir.SetZero();
+	}
 }
 
 double MLine::DistanceToPoint(const MPoint& point) const
@@ -113,17 +154,24 @@ MVector MLine::ProjectVector(const MVector& v, double* t) const
 bool MLine::Intersect(const MLine& line, MPoint& intPnt) const
 {
 	const double epsilon = 1e-8;
-	MPoint a_pnt = this->m_point;
-	MPoint b_pnt = line.m_point;
-	MVector c_vec(b_pnt - a_pnt);
-	if (fabs((this->m_dir * line.m_dir) % c_vec) <= epsilon) {
-		if (this->m_dir != line.m_dir) {
-			double t = ((c_vec * line.m_dir) % (this->m_dir * line.m_dir)) / ((this->m_dir * line.m_dir) % (this->m_dir * line.m_dir));
-			intPnt = this->m_point + t * this->m_dir;
-			return true;
-		}
+	if (m_dir.Magnitude() <= epsilon || line.m_dir.Magnitude() <= epsilon)
+	{
+		return false;
 	}
-	return false;
+	MVector c_vec(line.m_point - m_point);
+	MVector cross = m_dir * line.m_dir;
+	double crossLen2 = cross.Length2();
+	if (crossLen2 <= epsilon * epsilon)
+	{
+		return false;       // Âπ≥Ë°åÊàñÈáçÂêàÔºöÊ≤°ÊúâÂîØ‰∏Ä‰∫§ÁÇπ
+	}
+	if (fabs(cross % c_vec) > epsilon)
+	{
+		return false;       // ÂºÇÈù¢Áõ¥Á∫ø
+	}
+	double t = ((c_vec * line.m_dir) % cross) / crossLen2;
+	intPnt = m_point + t * m_dir;
+	return true;
 }
 
 MLineSeg::MLineSeg()
@@ -149,7 +197,7 @@ bool MLineSeg::Intersect(const MLineSeg& lsg, MPoint& intPnt) const
 	const MPoint& P1 = m_startPnt;
 	MVector V1 = m_endPnt - m_startPnt;
 	double m1 = V1.Magnitude();
-	if (fabs(m1) < ERR7)//L1ÕÀªØŒ™“ªµ„
+	if (fabs(m1) < ERR7)//L1ÈÄÄÂåñ‰∏∫‰∏ÄÁÇπ
 	{
 		if (lsg.IsContain(P1))
 		{
@@ -163,7 +211,7 @@ bool MLineSeg::Intersect(const MLineSeg& lsg, MPoint& intPnt) const
 	const MPoint& P2 = lsg.GetStartPoint();
 	MVector V2 = lsg.GetEndPoint() - P2;
 	double m2 = V2.Magnitude();
-	if (fabs(m2) < ERR7)//L2ÕÀªØŒ™“ªµ„
+	if (fabs(m2) < ERR7)//L2ÈÄÄÂåñ‰∏∫‰∏ÄÁÇπ
 	{
 		if (IsContain(P2))
 		{
@@ -182,7 +230,7 @@ bool MLineSeg::Intersect(const MLineSeg& lsg, MPoint& intPnt) const
 	double den = a[1] * a[1] - 1.0;
 
 
-	if (fabs(den) < ERR8)//π≤œﬂ
+	if (fabs(den) < ERR8)//ÂÖ±Á∫ø
 	{
 		if (IsContain(lsg.GetStartPoint()))
 		{
@@ -233,7 +281,7 @@ int MLineSeg::IntersectNew(const MLineSeg& lsg, MPoint& intPnt) const
 	const MPoint& P1 = m_startPnt;
 	MVector V1 = m_endPnt - m_startPnt;
 	double m1 = V1.Magnitude();
-	if (fabs(m1) < ERR7)//L1ÕÀªØŒ™“ªµ„
+	if (fabs(m1) < ERR7)//L1ÈÄÄÂåñ‰∏∫‰∏ÄÁÇπ
 	{
 		if (lsg.IsContain(P1))
 		{
@@ -247,7 +295,7 @@ int MLineSeg::IntersectNew(const MLineSeg& lsg, MPoint& intPnt) const
 	const MPoint& P2 = lsg.GetStartPoint();
 	MVector V2 = lsg.GetEndPoint() - P2;
 	double m2 = V2.Magnitude();
-	if (fabs(m2) < ERR7)//L2ÕÀªØŒ™“ªµ„
+	if (fabs(m2) < ERR7)//L2ÈÄÄÂåñ‰∏∫‰∏ÄÁÇπ
 	{
 		if (IsContain(P2))
 		{
@@ -266,7 +314,7 @@ int MLineSeg::IntersectNew(const MLineSeg& lsg, MPoint& intPnt) const
 	double den = a[1] * a[1] - 1.0;
 
 
-	if (fabs(den) < ERR8)//π≤œﬂ
+	if (fabs(den) < ERR8)//ÂÖ±Á∫ø
 	{
 		if (IsContain(lsg.GetStartPoint()))
 		{
@@ -339,7 +387,7 @@ bool MLineSeg::IsContain(const MPoint& pt) const
 
 	MVector vecSeg = m_endPnt - m_startPnt;
 	double lenSeg = vecSeg.Magnitude();
-	if (lenSeg < ERR7)//œﬂ∂ŒÕÀªØŒ™“ªµ„
+	if (lenSeg < ERR7)//Á∫øÊÆµÈÄÄÂåñ‰∏∫‰∏ÄÁÇπ
 	{
 		return false;
 	}
@@ -352,7 +400,7 @@ bool MLineSeg::IsContain(const MPoint& pt) const
 
 	double dot = vecSeg % vecSp;
 
-	double dis = DistanceToPoint(pt);	//»∑±£æ´∂»∑∂Œßƒ⁄
+	double dis = DistanceToPoint(pt);	//Á°Æ‰øùÁ≤æÂ∫¶ËåÉÂõ¥ÂÜÖ
 	const double epsilon = 1e-7;
 	if (fabs(dot - 1.0)<epsilon && lenSp < lenSeg &&fabs(dis)<epsilon)
 	{
@@ -368,11 +416,24 @@ double MLineSeg::GetLength() const
 
 double MLineSeg::DistanceToPoint(const MPoint& point) const
 {
-	MVector dir = this->Direction();
-	dir.Normalize();
-	MVector vec(point - m_startPnt);
-	MVector temp(dir * vec);
-	return temp.Magnitude();
+	MVector AB = m_endPnt - m_startPnt;
+	double len2 = AB.Length2();
+	if (len2 <= ERR7 * ERR7)
+	{
+		return point.DistanceToPoint(m_startPnt);
+	}
+	MVector AP = point - m_startPnt;
+	double ratio = (AP % AB) / len2;
+	if (ratio <= 0.0)
+	{
+		return point.DistanceToPoint(m_startPnt);
+	}
+	if (ratio >= 1.0)
+	{
+		return point.DistanceToPoint(m_endPnt);
+	}
+	MPoint projection = m_startPnt + AB * ratio;
+	return point.DistanceToPoint(projection);
 }
 
 MPoint MLineSeg::ProjectPoint(const MPoint& point, double* t) const
@@ -380,6 +441,14 @@ MPoint MLineSeg::ProjectPoint(const MPoint& point, double* t) const
 	MVector AP = point - m_startPnt;
 	MVector AB = m_endPnt - m_startPnt;
 	double len2_ab = AB.Length2();
+	if (len2_ab <= ERR7 * ERR7)
+	{
+		if (t)
+		{
+			*t = 0.0;
+		}
+		return m_startPnt;
+	}
 	double ratio = (AP % AB) / len2_ab;
 	if (t)
 	{

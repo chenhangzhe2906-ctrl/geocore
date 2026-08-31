@@ -1,14 +1,17 @@
 #include "pch.h"
-#include"ReadWriteFile.h"
-#include"MPoint.h"
+#include "ReadWriteFile.h"
+#include "MPoint.h"
 
+#include <cstring>
+
+// äºŒè¿›åˆ¶ STL çš„ä¸€ä¸ª facetï¼šæ³•å‘ 12B + 3 ä¸ªé¡¶ç‚¹ 36B + å±æ€§ 2B = 50B
 struct Facet
 {
-	float faceNormal[3]; //·¨ÏòÁ¿
-	float v1[3];//×ø±ê
-	float v2[3];//×ø±ê
-	float v3[3];//×ø±ê
-	UINT16 attribute;//¸½¼ÓÊôĞÔ
+	float faceNormal[3];
+	float v1[3];
+	float v2[3];
+	float v3[3];
+	unsigned short attribute;
 };
 
 ReadWriteFile::ReadWriteFile()
@@ -19,54 +22,57 @@ ReadWriteFile::~ReadWriteFile()
 {
 }
 
-void* ReadWriteFile::ReadSTL(const CString& pathName)
+bool ReadWriteFile::ReadSTL(const std::string& pathName, std::vector<MPoint>& points)
 {
-	ifstream is(pathName, ios::binary | ios::in);
-	unsigned long long fileLength=0;
-	unsigned int nFacet = 0;
+	std::ifstream is(pathName, std::ios::binary | std::ios::in);
 	if (!is.is_open())
 	{
-		return NULL;
+		return false;
 	}
-	is.seekg(80, ios::beg);
+
+	// è·³è¿‡ 80 å­—èŠ‚æ–‡ä»¶å¤´ï¼Œè¯»ä¸‰è§’å½¢æ•°é‡ï¼Œæ®æ­¤åˆ¤æ–­äºŒè¿›åˆ¶ / ASCII
+	is.seekg(80, std::ios::beg);
+	unsigned int nFacet = 0;
 	is.read((char*)&nFacet, 4);
-	bool binary = false;
-	fileLength = GetFileLength(is);
-	if (fileLength == 84 + nFacet * 50) {
-		binary = true;
-	}
-	vector <MPoint> points;
-	bool status = false;
-	if (binary == true) {
-		status = ReadBinary(is, points);
+
+	is.seekg(0, std::ios::end);
+	std::streamoff fileLen = is.tellg();
+
+	// äºŒè¿›åˆ¶ STL çš„å›ºå®šå¤§å°ï¼š80 å¤´ + 4 æ•°é‡ + nFacet * 50
+	bool binary = (fileLen == 84 + (std::streamoff)nFacet * 50);
+	if (binary)
+	{
+		is.seekg(80, std::ios::beg);          // å›åˆ° facet æ•°æ®åŒº
+		bool ok = ReadBinary(is, points);
 		is.close();
-	}
-	else {
-		is.close();
-		status = ReadASCII(pathName, points);
+		return ok;
 	}
 
+	is.close();
+	return ReadASCII(pathName, points);
 }
 
-unsigned long ReadWriteFile::GetFileLength(ifstream& is)
+unsigned long ReadWriteFile::GetFileLength(std::ifstream& is)
 {
-	ULONGLONG pos = is.tellg();
-	is.seekg(0, ios::end);
-	ULONGLONG endPos = is.tellg();
-	is.seekg((long)pos, ios::beg);
-	return endPos;
+	std::streampos pos = is.tellg();
+	is.seekg(0, std::ios::end);
+	std::streampos endPos = is.tellg();
+	is.seekg(pos, std::ios::beg);
+	return (unsigned long)endPos;
 }
 
-bool ReadWriteFile::ReadBinary(ifstream& is, vector<MPoint>& points)
+bool ReadWriteFile::ReadBinary(std::ifstream& is, std::vector<MPoint>& points)
 {
 	unsigned int nFacet = 0;
-	is.seekg(80, ios::beg);
+	is.seekg(80, std::ios::beg);
 	is.read((char*)&nFacet, 4);
-	points.reserve(nFacet * 3);
+	points.reserve(points.size() + (size_t)nFacet * 3);
+
 	Facet facet;
 	MPoint p;
-	for (int i = 0; i < nFacet; i++) {
-		is.read((char*)&facet, 50);
+	for (unsigned int i = 0; i < nFacet; i++)
+	{
+		is.read((char*)&facet, sizeof(Facet));
 		p.Set(facet.v1[0], facet.v1[1], facet.v1[2]);
 		points.push_back(p);
 		p.Set(facet.v2[0], facet.v2[1], facet.v2[2]);
@@ -74,43 +80,55 @@ bool ReadWriteFile::ReadBinary(ifstream& is, vector<MPoint>& points)
 		p.Set(facet.v3[0], facet.v3[1], facet.v3[2]);
 		points.push_back(p);
 	}
-
 	return true;
 }
 
-bool ReadWriteFile::ReadASCII(const CString& pathName, vector<MPoint>& points)
+bool ReadWriteFile::ReadASCII(const std::string& pathName, std::vector<MPoint>& points)
 {
-	CStdioFile MyFile;
-	MPoint p;
-	if (!MyFile.Open(pathName, CFile::modeRead | CFile::typeText)) {
-		return false;
-	}
-	if (MyFile.GetLength() == 0) {
-		MyFile.Close();
-		return false;
-	}
-	CString Line;
-	while (1) {
-		if (Line.Find(_T("facet normal")) == -1) {
-			break;
-		}
-		for (int i = 0; i < 3; i++) {
-			double x, y, z;
-			MyFile.ReadString(Line);
-			swscanf_s(Line, _T("vertex %lf%lf%lf"), &x, &y, &z);
-			p.Set(x, y, z);
-			points.push_back(p);
-		}
-		MyFile.ReadString(Line);	// Ìø¹ıend loop
-		MyFile.ReadString(Line);	//Ìø¹ı endfacet
-	}
-	if (points.size() == 0)
+	std::ifstream is(pathName);
+	if (!is.is_open())
 	{
-		MyFile.Close();
 		return false;
 	}
-	MyFile.Close();
+
+	std::vector<MPoint> result;
+	std::string line;
+	MPoint p;
+	while (std::getline(is, line))
+	{
+		if (line.find("facet normal") == std::string::npos)
+		{
+			continue;
+		}
+
+		// è¯¥ facet ä¸‹è¯»å– 3 ä¸ª vertexï¼ˆå…è®¸ä¸­é—´å¤¹ outer loop ç­‰è¡Œï¼‰
+		int got = 0;
+		while (got < 3 && std::getline(is, line))
+		{
+			size_t s = line.find_first_not_of(" \t\r");
+			if (s == std::string::npos)
+			{
+				continue;
+			}
+			if (line.compare(s, 6, "vertex") != 0)
+			{
+				continue;
+			}
+			std::istringstream ss(line.substr(s));
+			std::string tag;
+			double x = 0.0, y = 0.0, z = 0.0;
+			ss >> tag >> x >> y >> z;
+			p.Set(x, y, z);
+			result.push_back(p);
+			got++;
+		}
+	}
+	is.close();
+
+	if (result.empty())
+	{
+		return false;
+	}
+	points.insert(points.end(), result.begin(), result.end());
 	return true;
 }
-
-

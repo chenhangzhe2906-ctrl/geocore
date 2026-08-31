@@ -1,44 +1,13 @@
-﻿  pch.cpp
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: 中间目录(Debug\)包含从另一个项目(OpenSTL.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  pch.cpp
   MBBox.cpp
-  MEntity.cpp
-C:\Users\18453\source\repos\MySTL\OpenSTL\MEntity.h(22,33): error C2440: “return”: 无法从“const MBBox”转换为“const MEntity &”
-C:\Users\18453\source\repos\MySTL\OpenSTL\MEntity.h(22,33): message : 原因如下: 无法从“const MBBox”转换为“const MEntity”
-C:\Users\18453\source\repos\MySTL\OpenSTL\MEntity.h(22,42): message : 没有可用于执行该转换的用户定义的转换运算符，或者无法调用该运算符
-C:\Users\18453\source\repos\MySTL\OpenSTL\MEntity.h(23,36): error C2679: 二元“=”: 没有找到接受“const MEntity”类型的右操作数的运算符(或没有可接受的转换)
-C:\Users\18453\source\repos\MySTL\OpenSTL\MBBox.h(4,1): message : 可能是“MBBox &MBBox::operator =(MBBox &&)”
-C:\Users\18453\source\repos\MySTL\OpenSTL\MBBox.h(4,1): message : 或    “MBBox &MBBox::operator =(const MBBox &)”
-C:\Users\18453\source\repos\MySTL\OpenSTL\MEntity.h(23,36): message : 尝试匹配参数列表“(MBBox, const MEntity)”时
   MGeometry.cpp
   MLine.cpp
   MMatrix.cpp
-C:\Users\18453\source\repos\MySTL\OpenSTL\MMatrix.cpp(26,18): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-  MMesh.cpp
-  MObject.cpp
+  MPlane.cpp
   MPoint.cpp
   MVector.cpp
-  OpenSTL.cpp
-  OpenSTLDlg.cpp
   PointCompare.cpp
   ReadWriteFile.cpp
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(14,39): error C2065: “MPoint”: 未声明的标识符
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(14,32): error C2923: “std::vector”: 对于参数“_Ty”，“MPoint”不是有效的 模板 类型变量
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(14): message : 参见“MPoint”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(14,32): error C2976: “std::vector”: 模板 参数太少
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(430): message : 参见“std::vector”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(15,49): error C2065: “MPoint”: 未声明的标识符
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(15,42): error C2923: “std::vector”: 对于参数“_Ty”，“MPoint”不是有效的 模板 类型变量
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(15): message : 参见“MPoint”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(15,42): error C2976: “std::vector”: 模板 参数太少
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\vector(430): message : 参见“std::vector”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(41,33): error C2664: “bool ReadWriteFile::ReadBinary(std::ifstream &,std::vector &)”: 无法将参数 2 从“std::vector<MPoint,std::allocator<MPoint>>”转换为“std::vector &”
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(14,7): message : 参见“ReadWriteFile::ReadBinary”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(46,38): error C2664: “bool ReadWriteFile::ReadASCII(const CString &,std::vector &)”: 无法将参数 2 从“std::vector<MPoint,std::allocator<MPoint>>”转换为“std::vector &”
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(15,7): message : 参见“ReadWriteFile::ReadASCII”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(57,9): warning C4244: “return”: 从“ULONGLONG”转换到“unsigned long”，可能丢失数据
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(61,1): error C2511: “bool ReadWriteFile::ReadBinary(std::ifstream &,std::vector<MPoint,std::allocator<MPoint>> &)”:“ReadWriteFile”中没有找到重载的成员函数
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(4): message : 参见“ReadWriteFile”的声明
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(68,20): warning C4018: “<”: 有符号/无符号不匹配
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.cpp(82,1): error C2511: “bool ReadWriteFile::ReadASCII(const CString &,std::vector<MPoint,std::allocator<MPoint>> &)”:“ReadWriteFile”中没有找到重载的成员函数
-C:\Users\18453\source\repos\MySTL\OpenSTL\ReadWriteFile.h(4): message : 参见“ReadWriteFile”的声明
   正在生成代码...
-C:\Users\18453\source\repos\MySTL\OpenSTL\MMatrix.cpp(138): error C4716: “MMatrix::Inverse”: 必须返回一个值
+  OpenSTL.vcxproj -> C:\Users\18453\source\repos\MySTL\Debug\geocore.lib

@@ -3,7 +3,7 @@
 #include"MPoint.h"
 
 /*
-	members��
+	members:
 	int m_row;
 	int m_col;
 	double* m_pData;
@@ -84,61 +84,89 @@ MMatrix MMatrix::s_GetRotationMatrix(const MVector& srcVec, const MVector& dstVe
 
 MMatrix::MMatrix(void)
 {
+	m_row = 0;
+	m_col = 0;
+	m_pData = NULL;
+	m_ppData = NULL;
 }
 
 MMatrix::MMatrix(int r, int c)
+	: m_row(r), m_col(c), m_pData(NULL), m_ppData(NULL)
 {
-	this->m_row = r;
-	this->m_col = c;
-	this->m_pData = new double[r * c];
-	this->m_ppData = new double*[r];
-	for (int i = 0; i < r; i++) {
-		m_ppData[i] = &m_pData[i*c];
+	if (r <= 0 || c <= 0)
+	{
+		m_row = 0;
+		m_col = 0;
+		return;
 	}
-	memset(m_pData, 0.0, sizeof(double) * r * c);
-	return;
+	m_pData = new double[static_cast<size_t>(r) * static_cast<size_t>(c)]();
+	m_ppData = new double*[r];
+	for (int i = 0; i < r; i++) {
+		m_ppData[i] = &m_pData[static_cast<size_t>(i) * c];
+	}
 }
 
 MMatrix::MMatrix(const MMatrix& mat)
 {
+	// FIXED: the original copy ctor only copied pointers, and the destructor
+	// freed them, causing double-free (crashed in unoptimized Debug builds).
+	// Now performs a proper deep copy.
 	this->m_col = mat.m_col;
-	this->m_pData = mat.m_pData;
-	this->m_ppData = mat.m_ppData;
 	this->m_row = mat.m_row;
+	m_pData = new double[m_row * m_col];
+	m_ppData = new double*[m_row];
+	for (int i = 0; i < m_row * m_col; i++)
+	{
+		m_pData[i] = mat.m_pData[i];
+	}
+	for (int j = 0; j < m_row; j++)
+	{
+		m_ppData[j] = &m_pData[static_cast<size_t>(j) * static_cast<size_t>(m_col)];
+	}
 }
 
 MMatrix::~MMatrix(void)
 {
-	delete m_pData;
-	delete m_ppData;
+	delete[] m_pData;
+	delete[] m_ppData;
 }
 
 MMatrix& MMatrix::operator=(const MMatrix& mat)
 {
 	if (this == &mat) return *this;
-	this->m_col = mat.GetCol();
-	this->m_row = mat.GetRow();
-	delete[] m_pData;
-	delete[] m_ppData;
-	m_pData = new double[m_col * m_row];
-	m_ppData = new double*[m_row];
-	for (int i = 0; i < m_row*m_col; i++) {
-		m_pData[i] = mat.m_pData[i];
+
+	if (mat.m_row <= 0 || mat.m_col <= 0)
+	{
+		delete[] m_pData;
+		delete[] m_ppData;
+		m_row = 0;
+		m_col = 0;
+		m_pData = NULL;
+		m_ppData = NULL;
+		return *this;
 	}
-	for (int j = 0; j < m_row; j++) {
-		m_ppData[j] = &m_pData[j * m_col];
-	}
+
+	MMatrix temp(mat);  // 先深拷贝，保证自分配异常时原对象不被破坏
+	std::swap(m_row, temp.m_row);
+	std::swap(m_col, temp.m_col);
+	std::swap(m_pData, temp.m_pData);
+	std::swap(m_ppData, temp.m_ppData);
 	return *this;
 }
 
 MMatrix MMatrix::operator+(const MMatrix& mat2)
 {
+	if (m_row != mat2.m_row || m_col != mat2.m_col)
+	{
+		return MMatrix();
+	}
+	MMatrix result(m_row, m_col);
 	for (int i = 0; i < m_row; i++) {
 		for (int j = 0; j < m_col; j++) {
-			(*this)[i][j] += mat2[i][j];
+			result[i][j] = (*this)[i][j] + mat2[i][j];
 		}
 	}
-	return *this;
+	return result;
 }
 
 double* MMatrix::operator[](int r) const
@@ -148,13 +176,19 @@ double* MMatrix::operator[](int r) const
 
 void MMatrix::Set(int r, int c, double* pData)
 {
+	if (r < 0 || c < 0)
+	{
+		return;
+	}
+	delete[] m_pData;
+	delete[] m_ppData;
 	m_row = r;
 	m_col = c;
-	m_pData = pData;
+	m_pData = (pData != NULL) ? pData : ((r > 0 && c > 0) ? new double[r * c]() : NULL);
+	m_ppData = (r > 0) ? new double*[r] : NULL;
 	for (int i = 0; i < r; i++) {
-		m_ppData[i] = &m_pData[i * c];
+		m_ppData[i] = &m_pData[static_cast<size_t>(i) * static_cast<size_t>(c)];
 	}
-	return;
 }
 
 void MMatrix::Write(ostream& os, bool binary) const
@@ -180,39 +214,46 @@ void MMatrix::Write(ostream& os, bool binary) const
 	}
 }
 
-bool MMatrix::Read(ifstream is, bool binary)
+bool MMatrix::Read(ifstream& is, bool binary)
 {
-	if(binary)
+	int row = 0;
+	int col = 0;
+	if (binary)
 	{
-		is.read((char*)&m_row, sizeof(int));
-		is.read((char*)&m_col, sizeof(int));
+		if (!is.read((char*)&row, sizeof(int)) || !is.read((char*)&col, sizeof(int)))
+		{
+			return false;
+		}
 	}
 	else
 	{
-		is >> m_row >> m_col;
-		is.ignore();
+		if (!(is >> row >> col))
+		{
+			return false;
+		}
 	}
 
-	if (m_row == 0 || m_col == 0)
+	if (row < 0 || col < 0)
+	{
+		return false;
+	}
+	Set(row, col);
+	if (row == 0 || col == 0)
 	{
 		return true;
 	}
 
-	Set(m_row, m_col);
-
 	if (binary)
 	{
-		is.read((char*)m_pData, m_row * m_col * sizeof(double));
+		return (bool)is.read((char*)m_pData, (std::streamsize)row * col * sizeof(double));
 	}
-	else
+	for (int i = 0; i < row * col; i++)
 	{
-		for (int i = 0; i < m_col * m_row; i++)
+		if (!(is >> m_pData[i]))
 		{
-			is >> m_pData[i];
+			return false;
 		}
-		is.ignore();
 	}
-
 	return true;
 }
 
@@ -233,34 +274,113 @@ void MMatrix::SetIdentity()
 
 bool MMatrix::IsIdentity() const
 {
+	// FIXED: the original else-if was chained to the diagonal branch, so an
+	// identity matrix's diagonal value 1 was treated as "non-zero and failed",
+	// and IsIdentity() always returned false.
 	for (int i = 0; i < m_row; i++) {
 		for (int j = 0; j < m_col; j++) {
-			if (i == j && fabs((*this)[i][j]-1.0)>ERR8) {
-				return  false;
+			if (i == j) {
+				if (fabs((*this)[i][j] - 1.0) > ERR8) {
+					return false;
+				}
 			}
-			else if (fabs((*this)[i][j]) > ERR8) {
-				return false;
+			else {
+				if (fabs((*this)[i][j]) > ERR8) {
+					return false;
+				}
 			}
 		}
 	}
 	return true;
 }
 
-//����ѭ�� Jacobi��Cyclic Jacobi��; hypot�������;���ٶԳƾ�����������
+ // 循环 Jacobi（Cyclic Jacobi）求对称矩阵特征值
 bool MMatrix::JacobiEigen(double valEigen[3], MMatrix& vecEigen) const
 {
-	int i, j;
-	int nMaxIter = 60;
-	const double epsilon = 1e-6;
-	while (1) {
-		for (i = 0; i < m_col; i++) {
-			for (j = 0; j < m_row; j++) {
-				if (i != j && fabs((*this)[i][j]) > epsilon) {
-					
+	
+	if (m_row != 3 || m_col != 3)
+	{
+		return false;
+	}
+
+	// 工作矩阵：深拷贝一份，避免修改自身
+	MMatrix A(3, 3);
+	A = *this;
+
+	// 特征向量矩阵，初始为单位阵；收敛后各列即特征向量
+	MMatrix V(3, 3);
+	V.SetIdentity();
+
+	const int maxIter = 100;
+	const double eps = 1e-12;
+
+	int iter = 0;
+	while (iter++ < maxIter)
+	{
+		// 找最大的非对角元 (p, q)
+		int p = 0, q = 1;
+		double maxOff = 0.0;
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = i + 1; j < 3; j++)
+			{
+				double a = fabs(A[i][j]);
+				if (a > maxOff)
+				{
+					maxOff = a;
+					p = i;
+					q = j;
 				}
 			}
 		}
+		if (maxOff < eps)
+		{
+			break;   // 已收敛
+		}
+
+		// 旋转角：tan(2θ) = 2·A[p][q] / (A[q][q] - A[p][p])
+		double theta = 0.5 * atan2(2.0 * A[p][q], A[q][q] - A[p][p]);
+		double c = cos(theta);
+		double s = sin(theta);
+
+		// A' = J^T · A · J，分两步：
+		//   1) 左乘 J^T：旋转第 p、q 行（用旧行值）
+		double a_pk[3], a_qk[3];
+		for (int k = 0; k < 3; k++)
+		{
+			a_pk[k] = A[p][k];
+			a_qk[k] = A[q][k];
+		}
+		for (int k = 0; k < 3; k++)
+		{
+			A[p][k] = c * a_pk[k] - s * a_qk[k];
+			A[q][k] = s * a_pk[k] + c * a_qk[k];
+		}
+		//   2) 右乘 J：旋转第 p、q 列（读当前值，写新值，保持对称）
+		for (int i = 0; i < 3; i++)
+		{
+			double m_ip = A[i][p];
+			double m_iq = A[i][q];
+			A[i][p] = c * m_ip - s * m_iq;
+			A[i][q] = s * m_ip + c * m_iq;
+		}
+
+		// 累积特征向量：V = V · J
+		for (int k = 0; k < 3; k++)
+		{
+			double vkp = V[k][p], vkq = V[k][q];
+			V[k][p] = c * vkp - s * vkq;
+			V[k][q] = s * vkp + c * vkq;
+		}
 	}
+
+	// 收敛后对角线元素即特征值
+	for (int i = 0; i < 3; i++)
+	{
+		valEigen[i] = A[i][i];
+	}
+	vecEigen = V;   // 特征向量按列存放
+	return true;
 }
 
 bool MMatrix::Inverse()
@@ -306,7 +426,7 @@ bool MMatrix::LUDecompose()
 	double sum;
 	for (i = 0; i < m_row; i++)
 	{
-		for (j = i; j < m_col; j++)//����U[i][j]
+		for (j = i; j < m_col; j++) // 计算 U[i][j]
 		{
 			sum = 0.0;
 			for (k = 0; k < i; k++)
@@ -460,19 +580,30 @@ void MMatrix::ToArray(double mat[16]) const
 
 bool MMatrix::LUDecompose(vector<int>& idx)
 {
+	
 	int i, j, k;
 	double sum;
 	idx.resize(m_col);
 	idx.resize(m_row);
-	iota(idx.begin(), idx.end(), 0);  // �õ� [0,1,2,...,m_row-1]
+	iota(idx.begin(), idx.end(), 0);   // 得到初始置换 [0,1,2,...,m_row-1]
 	const double epsilon = 1e-8;
 	for (i = 0; i < m_row; i++)
 	{
+		// 先把第 i 列（含对角线）更新为 Schur 补：A[j][i] -= Σ_{k<i} A[j][k]*A[k][i]
+		for (j = i; j < m_row; j++)
+		{
+			sum = 0.0;
+			for (k = 0; k < i; k++)
+				sum += m_ppData[j][k] * m_ppData[k][i];
+			m_ppData[j][i] -= sum;
+		}
+
+		// 基于更新后的列选主元
 		double m = epsilon;
 		int m_i = i;
 		for (j = i; j < m_row; j++) {
-			if (fabs((*this)[j][i]) > fabs(m)) {
-				m = (*this)[j][i];
+			if (fabs(m_ppData[j][i]) > fabs(m)) {
+				m = m_ppData[j][i];
 				m_i = j;
 			}
 		}
@@ -480,22 +611,22 @@ bool MMatrix::LUDecompose(vector<int>& idx)
 			return false;
 		}
 		if (m_i != i) {
-			std::swap(m_ppData[i], m_ppData[m_i]); // �����н���
-			std::swap(idx[i], idx[m_i]);           // �û�ͬ��
+			std::swap(m_ppData[i], m_ppData[m_i]);  // 交换两行
+			std::swap(idx[i], idx[m_i]);            // 置换同步
 		}
-		for (j = i; j < m_col; j++)  //����U[i][j]
+
+		for (j = i + 1; j < m_col; j++)
 		{
 			sum = 0.0;
 			for (k = 0; k < i; k++)
 				sum += m_ppData[i][k] * m_ppData[k][j];
 			m_ppData[i][j] -= sum;
 		}
-		for (j = i + 1; j < m_row; j++)//����L[j][i]
+
+		// 计算 L 列
+		for (j = i + 1; j < m_row; j++)
 		{
-			sum = 0.0;
-			for (k = 0; k < i; k++)
-				sum += m_ppData[j][k] * m_ppData[k][i];
-			m_ppData[j][i] = (m_ppData[j][i] - sum) / m_ppData[i][i];
+			m_ppData[j][i] /= m_ppData[i][i];
 		}
 	}
 	return true;
@@ -546,20 +677,20 @@ bool MMatrix::GetSolutionAfterLUDecompose(const vector<int>& idx, double* b) {
 	std::vector<double> y(n);
 	for (int i = 0; i < n; ++i) y[i] = b[idx[i]];       // P b
 
-	// ǰ����L y = P b
+	 // 前代：L y = P b
 	for (int i = 0; i < n; ++i) {
 		double sum = 0;
 		for (int j = 0; j < i; ++j) sum += m_ppData[i][j] * y[j];
 		y[i] -= sum;
 	}
 
-	// �ش���U x = y
+	 // 回代：U x = y
 	for (int i = n - 1; i >= 0; --i) {
 		double sum = 0;
 		for (int j = i + 1; j < n; ++j) sum += m_ppData[i][j] * b[j];
 		double piv = m_ppData[i][i];
 		if (std::fabs(piv) < eps) return false;
-		b[i] = (y[i] - sum) / piv;   // ��д�� b
+		b[i] = (y[i] - sum) / piv;    // 写回 b
 	}
 	return true;
 }

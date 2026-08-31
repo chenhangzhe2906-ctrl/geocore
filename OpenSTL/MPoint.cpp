@@ -62,24 +62,19 @@ MPoint& MPoint::operator-=(const MPoint& other)
 	return *this;
 }
 
-MVector& MPoint::operator-(const MPoint& other) const
+MVector MPoint::operator-(const MPoint& other) const
 {
-	double newCoord[3];
-	for (int i = 0; i < 3; i++) {
-		newCoord[i]=this->coord[i] - other.coord[i];
-	}
-	MVector *newVec = new MVector(newCoord[0], newCoord[1], newCoord[2]);
-	return *newVec;
+	// 修正：原实现 new 一个 MVector 再返回引用，每次调用都泄漏内存；改为按值返回
+	return MVector(this->coord[0] - other.coord[0],
+		this->coord[1] - other.coord[1],
+		this->coord[2] - other.coord[2]);
 }
 
-MVector& MPoint::operator+(const MPoint& other) const
+MVector MPoint::operator+(const MPoint& other) const
 {
-	double newCoord[3];
-	for (int i = 0; i < 3; i++) {
-		newCoord[i] = this->coord[i] + other.coord[i];
-	}
-	MVector* newVec = new MVector(newCoord[0], newCoord[1], newCoord[2]);
-	return *newVec;
+	return MVector(this->coord[0] + other.coord[0],
+		this->coord[1] + other.coord[1],
+		this->coord[2] + other.coord[2]);
 }
 
 MPoint& MPoint::operator/=(int a)
@@ -92,7 +87,11 @@ MPoint& MPoint::operator/=(int a)
 
 double MPoint::DistanceToPoint(const MPoint& other) const
 {
-	return (this->coord[0] - other.coord[0]) * (this->coord[0] - other.coord[0]) + (this->coord[1] - other.coord[1]) * (this->coord[1] - other.coord[1]) + (this->coord[2] - other.coord[2]) * (this->coord[2] - other.coord[2]);
+	// 修正：原实现返回平方距离，与函数名不符；改为返回真实欧氏距离
+	double dx = this->coord[0] - other.coord[0];
+	double dy = this->coord[1] - other.coord[1];
+	double dz = this->coord[2] - other.coord[2];
+	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 MPoint operator+(const MPoint& point, const MVector& vec)

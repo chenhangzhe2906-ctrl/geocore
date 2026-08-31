@@ -13,8 +13,8 @@ public:
 	double& operator[](int idx);
 	MPoint& operator +=(const MPoint& other) ;
 	MPoint& operator -=(const MPoint& other);
-	MVector& operator-(const MPoint& other) const;
-	MVector& operator+(const MPoint& other) const;
+	MVector operator-(const MPoint& other) const;
+	MVector operator+(const MPoint& other) const;
 	friend MPoint operator+(const MPoint& point,const MVector& vec);
 	MPoint& operator /=(int a);
 	double DistanceToPoint(const MPoint& other) const ;

@@ -25,28 +25,35 @@ void MBBox::Set(const MPoint& minPoint, const MPoint& maxPoint)
 
 void MBBox::CalculateFromPoints(const vector<MPoint>& points)
 {
-	const double inf = 1e10;
-	vector<double> cMin = { inf,inf,inf };
-	vector <double> cMax = { -inf,-inf,-inf };
-	for (auto& it : points) {
-		for (int i = 0; i < 3; i++) {
-			cMin[i] = min(cMin[i], it[i]);
-			cMax[i] = max(cMax[i], it[i]);
+	// 修正：原实现把 min 也赋成了 cMax，导致包围盒退化成一个点；改为正确的 cMin
+	if (points.empty())
+	{
+		Clear();
+		return;
+	}
+	MPoint cMin = points[0];
+	MPoint cMax = points[0];
+	for (size_t k = 1; k < points.size(); k++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			cMin[i] = min(cMin[i], points[k][i]);
+			cMax[i] = max(cMax[i], points[k][i]);
 		}
 	}
-	m_maxPoint.Set(cMax[0], cMax[1], cMax[2]);
-	m_minPoint.Set(cMax[0], cMax[1], cMax[2]);
+	m_minPoint = cMin;
+	m_maxPoint = cMax;
 	return;
 }
 
 int MBBox::GetLongestDirection() const
 {
+	// 返回跨度最大的轴（0=X, 1=Y, 2=Z）
 	MVector longestVec(m_maxPoint - m_minPoint);
-	for (int i = 0; i < 2; i++) {
-		if (longestVec[i] == min(longestVec[0], longestVec[1], longestVec[2])) {
-			return i;
-		}
-	}
+	int idx = 0;
+	if (longestVec[1] > longestVec[idx]) idx = 1;
+	if (longestVec[2] > longestVec[idx]) idx = 2;
+	return idx;
 }
 
 void MBBox::Unite(const MBBox& other)
@@ -70,29 +77,40 @@ void MBBox::Unite(const MBBox& other)
 
 bool MBBox::IsDisjoint(const MLine& cursorRay) const
 {
+	// 使用标准 slab 算法判断无限直线是否与包围盒相交。
+	// 原实现要求直线起点必须在盒内，并且对 d[i] == 0 做了除零，
+	// 会把大量实际相交/不相交的情况判反。
 	const MVector d = cursorRay.Direction();
 	const MPoint p = cursorRay.Point();
-	double maxT = 1.0e10;
-	double minT = -maxT;
-	for (int i = 0; i < 3; i++) {
-		if (p[i]<this->m_minPoint[i] || p[i] > this->m_maxPoint[i]) {
-			return false;
-		}
-		else {
-			double t = 1.0 / d[i];
-			double minV = (m_minPoint[i] - p[i]) * t;
-			double maxV = (m_maxPoint[i] - p[i]) * t;
-			if (maxV < minV) {
-				swap(maxV, minV);
-			}
-			maxT = min(maxT, maxV);
-			minT = max(minT, minV);
-			if (maxT < minT) {
+	const double epsilon = 1e-12;
+	double tMin = -1.0e100;
+	double tMax = 1.0e100;
+	for (int i = 0; i < 3; i++)
+	{
+		if (fabs(d[i]) <= epsilon)
+		{
+			// 平行于该轴向平面：若坐标不在区间内，整条直线都不相交。
+			if (p[i] < m_minPoint[i] || p[i] > m_maxPoint[i])
+			{
 				return true;
 			}
+			continue;
+		}
+
+		double t1 = (m_minPoint[i] - p[i]) / d[i];
+		double t2 = (m_maxPoint[i] - p[i]) / d[i];
+		if (t1 > t2)
+		{
+			swap(t1, t2);
+		}
+		tMin = max(tMin, t1);
+		tMax = min(tMax, t2);
+		if (tMin > tMax)
+		{
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 bool MBBox::IsDisjoint(const MBBox& box) const
@@ -145,6 +163,7 @@ MPoint MBBox::Center() const
 
 double MBBox::DistanceToPoint(const MPoint& point) const
 {
+	// 修正：原实现返回平方距离，改为返回真实距离（与其它 DistanceToPoint 一致）
 	double dist = 0.0;
 	for (int i = 0; i < 3; i++)
 	{
@@ -160,7 +179,7 @@ double MBBox::DistanceToPoint(const MPoint& point) const
 		}
 	}
 
-	return dist;
+	return sqrt(dist);
 }
 
 bool MBBox::Split(double splitValue, int dir, MBBox& subBox1, MBBox& subBox2) const

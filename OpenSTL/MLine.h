@@ -28,8 +28,8 @@ public:
 	bool Intersect(const MLine& line, MPoint& intPnt) const;
 
 public:
-	void Write(ostream& os, bool binary = true) const {}
-	bool Read(istream& is, bool binary = true) { return true; }
+	void Write(ostream& os, bool binary = true) const;
+	bool Read(istream& is, bool binary = true);
 
 private:
 	MPoint m_point;
@@ -49,23 +49,23 @@ public:
 	//bool IsIntersectWithLineSeg(const MLineSeg& lineSeg);
 	bool Intersect(const MLineSeg& lsg, MPoint& intPnt) const;
 
-	// Ïà½»·µ»Ø1£¬²¢Êä³ö½»µã£»¹²Ïß·µ»Ø-1,Êä³ö½»µãÎª°üº¬µÄ¶Ëµã£»²»Ïà½»·µ»Ø0
+	// ç›¸äº¤è¿”å›1ï¼Œå¹¶è¾“å‡ºäº¤ç‚¹ï¼›å…±çº¿è¿”å›-1,è¾“å‡ºäº¤ç‚¹ä¸ºåŒ…å«çš„ç«¯ç‚¹ï¼›ä¸ç›¸äº¤è¿”å›0
 	int IntersectNew(const MLineSeg& lsg, MPoint& intPnt) const;
 
-	bool IsCoincidence(const MLineSeg& seg)const;//Ïß¶ÎÊÇ·ñÖØºÏ
-	bool IsContain(const MPoint& pt)const;//µãÔÚÏß¶ÎÉÏ
+	bool IsCoincidence(const MLineSeg& seg)const;//çº¿æ®µæ˜¯å¦é‡åˆ
+	bool IsContain(const MPoint& pt)const;//ç‚¹åœ¨çº¿æ®µä¸Š
 
 	void SetStartPoint(const MPoint& pt) { m_startPnt = pt; }
 	void SetEndPoint(const MPoint& pt) { m_endPnt = pt; }
 
 	double GetLength() const;
 
-	// Ö¸¶¨µãÓëÏß¶Î×î½üµãÖ®¼äµÄ¾àÀë
+	// æŒ‡å®šç‚¹ä¸çº¿æ®µæœ€è¿‘ç‚¹ä¹‹é—´çš„è·ç¦»
 	double DistanceToPoint(const MPoint& point) const;
 
-	// ½«¸ø¶¨µãÍ¶Ó°µ½Ïß¶ÎÉÏ
-	// Èç¹ûÍ¶Ó°µãÔÚÏß¶ÎÉÏ£¬Ö±½Ó·µ»Ø
-	// Èç¹ûÍ¶Ó°µã²»ÔÚÏß¶ÎÉÏ£¬Ôò·µ»Ø×î½üµÄ¶Ëµã
+	// å°†ç»™å®šç‚¹æŠ•å½±åˆ°çº¿æ®µä¸Š
+	// å¦‚æœæŠ•å½±ç‚¹åœ¨çº¿æ®µä¸Šï¼Œç›´æ¥è¿”å›
+	// å¦‚æœæŠ•å½±ç‚¹ä¸åœ¨çº¿æ®µä¸Šï¼Œåˆ™è¿”å›æœ€è¿‘çš„ç«¯ç‚¹
 	MPoint ProjectPoint(const MPoint& point, double* t = NULL) const;
 
 private:

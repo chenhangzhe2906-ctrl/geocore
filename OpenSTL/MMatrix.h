@@ -1,8 +1,8 @@
 #pragma once
 #include "pch.h"
-//#include
-class MVector;
-class MPoint;
+#include "MVector.h"
+#include "MPoint.h"
+#include"MLine.h"
 
 class MMatrix
 {
@@ -30,14 +30,14 @@ public:
 
 public:
 	void Write(ostream& os, bool binary = true) const;
-	bool Read(ifstream is, bool binary = true);
+	bool Read(ifstream& is, bool binary = true);
 
 	void SetIdentity();
 	bool IsIdentity() const;
 	bool JacobiEigen(double valEigen[3], MMatrix& vecEigen) const;
 
-	bool Inverse();// ¾ØÕó±äÎªÄæ¾ØÕó
-	void Transpose();// ×ªÖÃ
+	bool Inverse(); // åŽŸåœ°æ±‚é€†ï¼ˆå¤±è´¥è¿”å›ž falseï¼‰
+	void Transpose(); // è½¬ç½®
 
 	bool LUDecompose();// LU decompose matrix, used for resolve liner system, Ax = b
 	bool GetSolutionAfterLUDecompose(double* b, double* x);
@@ -70,7 +70,7 @@ inline MVector operator*(const MMatrix& mat, const MVector& vec)
 	for (int i = 0; i < 3; i++) {
 		double t = 0.0;
 		for (int j = 0; j < mat.m_row; j++) {
-			t += mat[i][j] * vec[i];
+			t += mat[i][j] * vec[j];   // FIXED: was vec[i], which broke mat*vec
 		}
 		temp.push_back(t);
 	}
@@ -84,7 +84,7 @@ inline MPoint operator*(const MMatrix& mat, const MPoint& point)
 	for (int i = 0; i < 3; i++) {
 		double t = 0.0;
 		for (int j = 0; j < mat.m_row; j++) {
-			t += mat[i][j] * point[i];
+			t += mat[i][j] * point[j];   // FIXED: was point[i], which broke mat*point
 		}
 		temp.push_back(t);
 	}

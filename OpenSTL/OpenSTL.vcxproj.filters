@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="源文件">
@@ -9,90 +9,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OpenSTL.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenSTLDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ReadWriteFile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MPoint.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MMesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="PointCompare.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MObject.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MEntity.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MLine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MMatrix.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MVector.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MGeometry.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MBBox.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="OpenSTL.cpp">
+    <ClCompile Include="MBBox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="OpenSTLDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ReadWriteFile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MPoint.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MMesh.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PointCompare.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MObject.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MEntity.cpp">
+    <ClCompile Include="MGeometry.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MLine.cpp">
@@ -101,29 +23,55 @@
     <ClCompile Include="MMatrix.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MPlane.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="MVector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MGeometry.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MBBox.cpp">
+    <ClCompile Include="PointCompare.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadWriteFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="OpenSTL.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\OpenSTL.rc2">
-      <Filter>资源文件</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\OpenSTL.ico">
-      <Filter>资源文件</Filter>
-    </Image>
+    <ClInclude Include="MBBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MGeometry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MLine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MMatrix.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MPlane.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MVector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCompare.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadWriteFile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,23 +1,32 @@
-﻿// pch.h: 这是预编译标头文件。
-// 下方列出的文件仅编译一次，提高了将来生成的生成性能。
-// 这还将影响 IntelliSense 性能，包括代码完成和许多代码浏览功能。
-// 但是，如果此处列出的文件中的任何一个在生成之间有更新，它们全部都将被重新编译。
-// 请勿在此处添加要频繁更新的文件，这将使得性能优势无效。
+// pch.h：预编译标头
+// 本项目为纯 C++ 几何库，不再依赖 MFC / Windows 头文件。
 
 #ifndef PCH_H
 #define PCH_H
 
-// 添加要在此处预编译的标头
-#include "framework.h"
 #include <iostream>
-#include<vector>
-#include<map>
-#include<fstream>
+#include <istream>
 #include <ostream>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include <numeric>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cassert>
+#include <memory>
+
 using namespace std;
 
 #define ERR8 1e-8
 #define ERR7 1e-7
+
+// 兼容：原 MFC 工程里 ASSERT 来自 MFC，纯 C++ 环境下退化为标准 assert
+#ifndef ASSERT
+#define ASSERT(x) assert(x)
+#endif
 
 #endif //PCH_H
